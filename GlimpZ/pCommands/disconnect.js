@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { hasControlPermission } = require('../helpers/musicHelpers');
+const { hasControlPermission, cleanupPlayer } = require('../helpers/musicHelpers');
 const emojis = require('../emojis.json');
 
 module.exports = {
@@ -49,6 +49,7 @@ module.exports = {
         }
 
         if (player) {
+            cleanupPlayer(player);
             player.destroy();
         } else if (voiceConnection) {
             voiceConnection.disconnect();

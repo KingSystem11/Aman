@@ -725,13 +725,74 @@ function setupMusicEvents(client) {
     });
 
     client.poru.on('trackEnd', async (player, track, data) => {
-        if (player.updateInterval) clearInterval(player.updateInterval);
+        if (player.updateInterval) {
+            clearInterval(player.updateInterval);
+            player.updateInterval = null;
+        }
+        
+        if (player.buttonCollector) {
+            try {
+                player.buttonCollector.stop('trackEnd');
+            } catch (e) {}
+            player.buttonCollector = null;
+        }
+        
+        if (player.selectCollector) {
+            try {
+                player.selectCollector.stop('trackEnd');
+            } catch (e) {}
+            player.selectCollector = null;
+        }
     });
 
     client.poru.on('queueEnd', async (player) => {
-        if (player.updateInterval) clearInterval(player.updateInterval);
+        if (player.updateInterval) {
+            clearInterval(player.updateInterval);
+            player.updateInterval = null;
+        }
         
-        if (!player.autoplayEnabled) return;
+        if (player.buttonCollector) {
+            try {
+                player.buttonCollector.stop('queueEnd');
+            } catch (e) {}
+            player.buttonCollector = null;
+        }
+        
+        if (player.selectCollector) {
+            try {
+                player.selectCollector.stop('queueEnd');
+            } catch (e) {}
+            player.selectCollector = null;
+        }
+        
+        if (player.nowPlayingMessage && player.nowPlayingMessage.deletable) {
+            try {
+                await player.nowPlayingMessage.delete().catch(() => {});
+            } catch (e) {}
+            player.nowPlayingMessage = null;
+        }
+        
+        player._moodplayActive = false;
+        player._moodplayMood = null;
+        
+        if (!player.autoplayEnabled) {
+            const channel = client.channels.cache.get(player.textChannel);
+            if (channel) {
+                const idleEmbed = new EmbedBuilder()
+                    .setColor(0x5865F2)
+                    .setDescription(`${emojis.music} Queue finished! Use \`.play\` to add more songs or \`.stop\` to disconnect.`);
+                await channel.send({ embeds: [idleEmbed] }).catch(() => {});
+            }
+            
+            setTimeout(() => {
+                const currentPlayer = client.poru.players.get(player.guildId);
+                if (currentPlayer && !currentPlayer.isPlaying && currentPlayer.queue.length === 0) {
+                    currentPlayer.destroy();
+                }
+            }, 180000);
+            
+            return;
+        }
 
         const lastTrack = player._lastPlayedTrack || player.currentTrack;
         
@@ -850,15 +911,42 @@ function setupMusicEvents(client) {
     });
 
     client.poru.on('playerDestroy', (player) => {
-        if (player.updateInterval) clearInterval(player.updateInterval);
+        if (player.updateInterval) {
+            clearInterval(player.updateInterval);
+            player.updateInterval = null;
+        }
+        
         if (player.buttonCollector) {
             try {
-                player.buttonCollector.stop();
+                player.buttonCollector.stop('destroy');
             } catch (e) {}
+            player.buttonCollector = null;
         }
+        
+        if (player.selectCollector) {
+            try {
+                player.selectCollector.stop('destroy');
+            } catch (e) {}
+            player.selectCollector = null;
+        }
+        
+        if (player.nowPlayingMessage) {
+            try {
+                if (player.nowPlayingMessage.deletable) {
+                    player.nowPlayingMessage.delete().catch(() => {});
+                }
+            } catch (e) {}
+            player.nowPlayingMessage = null;
+        }
+        
         if (player._autoplayHistory) {
             player._autoplayHistory.clear();
+            player._autoplayHistory = null;
         }
+        
+        player._moodplayActive = false;
+        player._moodplayMood = null;
+        player._lastPlayedTrack = null;
     });
 }
 

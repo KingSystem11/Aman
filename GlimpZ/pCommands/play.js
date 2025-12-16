@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { formatDuration } = require('../helpers/musicHelpers');
+const { formatDuration, isNodeAvailable, ensureActivePlayer } = require('../helpers/musicHelpers');
 const config = require('../config');
 const emojis = require('../emojis.json');
 
@@ -30,6 +30,13 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setColor(0xFF0000)
                 .setDescription(`${emojis.error} Please provide a song title or URL!`);
+            return message.reply({ embeds: [embed] });
+        }
+
+        if (!isNodeAvailable(client)) {
+            const embed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setDescription(`${emojis.error} Music server is currently unavailable. Please try again in a moment.`);
             return message.reply({ embeds: [embed] });
         }
 
@@ -68,14 +75,7 @@ module.exports = {
                 return loadingMsg.edit({ embeds: [embed] });
             }
 
-            const player = client.poru.createConnection({
-                guildId: guild.id,
-                voiceChannel: userVC.id,
-                textChannel: channel.id,
-                deaf: true,
-            });
-
-            if (player.autoplayEnabled === undefined) player.autoplayEnabled = false;
+            const player = ensureActivePlayer(client, guild.id, userVC.id, channel.id);
 
             for (const track of res.tracks) {
                 track.info.requester = message.author;
@@ -116,17 +116,7 @@ module.exports = {
             return loadingMsg.edit({ embeds: [embed] });
         }
 
-        let player = client.poru.players.get(guild.id);
-        if (!player) {
-            player = client.poru.createConnection({
-                guildId: guild.id,
-                voiceChannel: userVC.id,
-                textChannel: channel.id,
-                deaf: true,
-            });
-        }
-
-        if (player.autoplayEnabled === undefined) player.autoplayEnabled = false;
+        const player = ensureActivePlayer(client, guild.id, userVC.id, channel.id);
 
         if (res.loadType === 'playlist' || res.loadType === 'PLAYLIST_LOADED') {
             for (const track of res.tracks) {

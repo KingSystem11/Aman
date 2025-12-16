@@ -1,4 +1,5 @@
 const { Events, EmbedBuilder } = require('discord.js');
+const { cleanupPlayer } = require('../helpers/musicHelpers');
 const emojis = require('../emojis.json');
 
 const aloneTimeouts = new Map();
@@ -14,7 +15,6 @@ module.exports = {
 
         if (newState.id === client.user.id) {
             if (!newState.channelId) {
-                // Clear inactivity timeout first to prevent duplicate messages
                 if (aloneTimeouts.has(guild.id)) {
                     clearTimeout(aloneTimeouts.get(guild.id));
                     aloneTimeouts.delete(guild.id);
@@ -28,17 +28,11 @@ module.exports = {
                     await channel.send({ embeds: [embed] }).catch(() => {});
                 }
                 
-                if (player.updateInterval) clearInterval(player.updateInterval);
-                if (player.buttonCollector) {
-                    try {
-                        player.buttonCollector.stop('botDisconnected');
-                    } catch (e) {}
-                }
-                if (player.filterCollector) {
-                    try {
-                        player.filterCollector.stop('botDisconnected');
-                    } catch (e) {}
-                }
+                cleanupPlayer(player);
+                
+                try {
+                    player.destroy();
+                } catch (e) {}
                 
                 return;
             }
@@ -74,17 +68,11 @@ module.exports = {
                             await channel.send({ embeds: [embed] }).catch(() => {});
                         }
                         
-                        if (currentPlayer.updateInterval) clearInterval(currentPlayer.updateInterval);
-                        if (currentPlayer.buttonCollector) {
-                            try {
-                                currentPlayer.buttonCollector.stop('aloneInChannel');
-                            } catch (e) {}
-                        }
-                        if (currentPlayer.filterCollector) {
-                            try {
-                                currentPlayer.filterCollector.stop('aloneInChannel');
-                            } catch (e) {}
-                        }
+                        cleanupPlayer(currentPlayer);
+                        
+                        try {
+                            currentPlayer.destroy();
+                        } catch (e) {}
                     }
                     
                     aloneTimeouts.delete(guild.id);

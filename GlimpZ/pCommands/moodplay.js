@@ -1,4 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
+const { isNodeAvailable, ensureActivePlayer } = require('../helpers/musicHelpers');
 const emojis = require('../emojis.json');
 
 const moodData = {
@@ -256,6 +257,13 @@ module.exports = {
             return message.reply({ embeds: [embed] });
         }
 
+        if (!isNodeAvailable(client)) {
+            const embed = new EmbedBuilder()
+                .setColor(0xFF0000)
+                .setDescription(`${emojis.error} Music server is currently unavailable. Please try again in a moment.`);
+            return message.reply({ embeds: [embed] });
+        }
+
         const loadingEmbed = new EmbedBuilder()
             .setColor(mood.color)
             .setDescription(`${mood.emoji} **${mood.title}**\n\n${emojis.music} Loading ${moodInput} music for you...`);
@@ -282,17 +290,10 @@ module.exports = {
             return loadingMsg.edit({ embeds: [embed] });
         }
 
-        let player = client.poru.players.get(guild.id);
-        if (!player) {
-            player = client.poru.createConnection({
-                guildId: guild.id,
-                voiceChannel: userVC.id,
-                textChannel: channel.id,
-                deaf: true,
-            });
-        }
-
-        if (player.autoplayEnabled === undefined) player.autoplayEnabled = false;
+        const player = ensureActivePlayer(client, guild.id, userVC.id, channel.id);
+        
+        player._moodplayActive = true;
+        player._moodplayMood = moodInput;
 
         let tracksAdded = 0;
 
