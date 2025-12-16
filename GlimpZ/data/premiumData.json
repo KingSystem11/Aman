@@ -1,0 +1,52 @@
+{
+  "users": {
+    "1113808268960206928": {
+      "tier": "Platinum",
+      "activated": 1762674225425,
+      "expires": 1794210225425,
+      "servers": []
+    }
+  },
+  "codes": [
+    {
+      "code": "371ED9C",
+      "tier": "Gold",
+      "duration": 604800000,
+      "createdBy": "1113808268960206928",
+      "createdAt": 1762625475892,
+      "expires": 1763230275892
+    },
+    {
+      "code": "1683C60",
+      "tier": "Bronze",
+      "duration": 2592000000,
+      "createdBy": "1113808268960206928",
+      "createdAt": 1762625497974,
+      "expires": 1765217497974
+    },
+    {
+      "code": "B5F93A9",
+      "tier": "Gold",
+      "duration": 604800000,
+      "createdBy": "1113808268960206928",
+      "createdAt": 1762663346893,
+      "expires": 1763268146893
+    },
+    {
+      "code": "2046000",
+      "tier": "Platinum",
+      "duration": 604800000,
+      "createdBy": "1113808268960206928",
+      "createdAt": 1762674838796,
+      "expires": 1763279638796
+    },
+    {
+      "code": "BF58424",
+      "tier": "Platinum",
+      "duration": 31536000000,
+      "createdBy": "1113808268960206928",
+      "createdAt": 1762769523171,
+      "expires": 1794305523171
+    }
+  ]
+}
