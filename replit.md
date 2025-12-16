@@ -50,8 +50,17 @@ Preferred communication style: Simple, everyday language.
 - Emoji mappings in `GlimpZ/emojis.json`
 
 ### Helper Modules
-- `GlimpZ/helpers/musicHelpers.js` - Duration formatting, progress bars, permission checks
+- `GlimpZ/helpers/musicHelpers.js` - Duration formatting, progress bars, permission checks, player lifecycle management
 - `GlimpZ/helpers/colorHelper.js` - Color conversion utilities
+
+### Recent Changes (December 2025)
+- Fixed voice channel stale reference bug where bot joins wrong VC after auto-leave
+- Fixed moodplay freeze bug where bot becomes unresponsive after queue ends
+- Added `ensureActivePlayer()` helper to destroy stale players and update voice channel references
+- Added `cleanupPlayer()` function for proper interval/collector/moodplay state cleanup
+- Added `isNodeAvailable()` for Lavalink node readiness checks
+- Enhanced music event handlers (trackEnd, queueEnd, playerDestroy) for proper player lifecycle
+- Updated play, moodplay, join, disconnect, stop commands with proper cleanup
 
 ## External Dependencies
 
