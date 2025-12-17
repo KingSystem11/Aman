@@ -70,7 +70,7 @@ async function handleGen(message, args) {
   if (!timeArg) {
     const embed = new EmbedBuilder()
       .setColor(0xFF0000)
-      .setDescription(`Please specify code validity time!\nUsage: \`np gen <time> [np_duration]\`\n\nExamples:\n\`np gen 1h\` - Code valid for 1 hour, grants lifetime NP\n\`np gen 24h 1month\` - Code valid for 24 hours, grants 1 month NP\n\nValid durations: 1day, 1week, 1month, 1year, lifetime`);
+      .setDescription(`Please specify code validity time!\nUsage: \`np gen <time> [np_duration]\`\n\nExamples:\n\`np gen 1h\` - Code valid for 1 hour, grants lifetime NP\n\`np gen 24h 1month\` - Code valid for 24 hours, grants 1 month NP\n\nValid durations: 1day, 1week, 1month, 3month, 6month, 1year, 3year, lifetime`);
     return message.reply({ embeds: [embed] });
   }
 
@@ -82,12 +82,12 @@ async function handleGen(message, args) {
     return message.reply({ embeds: [embed] });
   }
 
-  const validDurations = ["1day", "1week", "1month", "1year", "lifetime"];
+  const validDurations = ["1day", "1week", "1month", "3month", "6month", "1year", "3year", "lifetime"];
   const npDuration = npDurationArg.toLowerCase();
   if (!validDurations.includes(npDuration)) {
     const embed = new EmbedBuilder()
       .setColor(0xFF0000)
-      .setDescription(`Invalid no-prefix duration!\nValid options: 1day, 1week, 1month, 1year, lifetime`);
+      .setDescription(`Invalid no-prefix duration!\nValid options: 1day, 1week, 1month, 3month, 6month, 1year, 3year, lifetime`);
     return message.reply({ embeds: [embed] });
   }
 
@@ -106,9 +106,21 @@ async function handleGen(message, args) {
       durationMs = 30 * 24 * 60 * 60 * 1000;
       durationText = "1 Month";
       break;
+    case "3month":
+      durationMs = 90 * 24 * 60 * 60 * 1000;
+      durationText = "3 Months";
+      break;
+    case "6month":
+      durationMs = 180 * 24 * 60 * 60 * 1000;
+      durationText = "6 Months";
+      break;
     case "1year":
       durationMs = 365 * 24 * 60 * 60 * 1000;
       durationText = "1 Year";
+      break;
+    case "3year":
+      durationMs = 3 * 365 * 24 * 60 * 60 * 1000;
+      durationText = "3 Years";
       break;
   }
 
@@ -153,14 +165,6 @@ async function handleClaim(message, args) {
     return message.reply({ embeds: [embed] });
   }
 
-  const existing = await NoPrefix.findOne({ where: { userId: message.author.id } });
-  if (existing) {
-    const embed = new EmbedBuilder()
-      .setColor(0xFF0000)
-      .setDescription(`You already have no-prefix access!`);
-    return message.reply({ embeds: [embed] });
-  }
-
   const codeRecord = await NpCode.findValidCode(codeArg);
   if (!codeRecord) {
     const embed = new EmbedBuilder()
@@ -169,19 +173,48 @@ async function handleClaim(message, args) {
     return message.reply({ embeds: [embed] });
   }
 
+  const existing = await NoPrefix.findOne({ where: { userId: message.author.id } });
+  
   let expiresAt = null;
-  if (codeRecord.durationMs) {
-    expiresAt = new Date(Date.now() + parseInt(codeRecord.durationMs));
-  }
+  let isTimeAdded = false;
+  let previousExpiry = null;
 
-  await NoPrefix.create({
-    userId: message.author.id,
-    username: message.author.username,
-    grantedBy: codeRecord.createdBy,
-    grantedByUsername: codeRecord.createdByUsername,
-    expiresAt,
-    duration: codeRecord.duration,
-  });
+  if (existing) {
+    if (existing.expiresAt === null) {
+      const embed = new EmbedBuilder()
+        .setColor(0xFF0000)
+        .setDescription(`You already have lifetime no-prefix access!`);
+      return message.reply({ embeds: [embed] });
+    }
+    
+    if (codeRecord.durationMs === null) {
+      existing.expiresAt = null;
+      existing.duration = "Lifetime";
+      await existing.save();
+      expiresAt = null;
+    } else {
+      previousExpiry = new Date(existing.expiresAt);
+      const baseTime = previousExpiry > new Date() ? previousExpiry.getTime() : Date.now();
+      expiresAt = new Date(baseTime + parseInt(codeRecord.durationMs));
+      existing.expiresAt = expiresAt;
+      existing.duration = `Extended (+${codeRecord.duration})`;
+      await existing.save();
+      isTimeAdded = true;
+    }
+  } else {
+    if (codeRecord.durationMs) {
+      expiresAt = new Date(Date.now() + parseInt(codeRecord.durationMs));
+    }
+
+    await NoPrefix.create({
+      userId: message.author.id,
+      username: message.author.username,
+      grantedBy: codeRecord.createdBy,
+      grantedByUsername: codeRecord.createdByUsername,
+      expiresAt,
+      duration: codeRecord.duration,
+    });
+  }
 
   codeRecord.isUsed = true;
   codeRecord.claimedBy = message.author.id;
@@ -189,10 +222,19 @@ async function handleClaim(message, args) {
   codeRecord.claimedAt = new Date();
   await codeRecord.save();
 
+  let description;
+  if (isTimeAdded) {
+    description = `You have successfully extended your no-prefix access!\n\n**Added:** ${codeRecord.duration}\n**New Expiry:** <t:${Math.floor(expiresAt.getTime() / 1000)}:R>`;
+  } else if (expiresAt === null) {
+    description = `You have successfully ${existing ? 'upgraded to' : 'claimed'} lifetime no-prefix access!`;
+  } else {
+    description = `You have successfully claimed no-prefix access!\n\n**Duration:** ${codeRecord.duration}\n**Expires:** <t:${Math.floor(expiresAt.getTime() / 1000)}:R>`;
+  }
+
   const embed = new EmbedBuilder()
     .setColor(0x00FF00)
-    .setTitle("No-Prefix Claimed!")
-    .setDescription(`You have successfully claimed no-prefix access!\n\n**Duration:** ${codeRecord.duration}${expiresAt ? `\n**Expires:** <t:${Math.floor(expiresAt.getTime() / 1000)}:R>` : ""}`)
+    .setTitle(isTimeAdded ? "No-Prefix Extended!" : "No-Prefix Claimed!")
+    .setDescription(description)
     .setFooter({ text: `Code: ${codeRecord.code}` })
     .setTimestamp();
 
@@ -267,7 +309,10 @@ async function handleAdd(message, args) {
       { label: "1 Day", description: "Access for 1 day", value: "1day" },
       { label: "1 Week", description: "Access for 1 week", value: "1week" },
       { label: "1 Month", description: "Access for 1 month", value: "1month" },
+      { label: "3 Months", description: "Access for 3 months", value: "3month" },
+      { label: "6 Months", description: "Access for 6 months", value: "6month" },
       { label: "1 Year", description: "Access for 1 year", value: "1year" },
+      { label: "3 Years", description: "Access for 3 years", value: "3year" },
       { label: "Lifetime", description: "Access forever", value: "lifetime" },
     ]);
 
@@ -311,9 +356,21 @@ async function handleAdd(message, args) {
         expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
         durationText = "1 Month";
         break;
+      case "3month":
+        expiresAt = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+        durationText = "3 Months";
+        break;
+      case "6month":
+        expiresAt = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000);
+        durationText = "6 Months";
+        break;
       case "1year":
         expiresAt = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
         durationText = "1 Year";
+        break;
+      case "3year":
+        expiresAt = new Date(now.getTime() + 3 * 365 * 24 * 60 * 60 * 1000);
+        durationText = "3 Years";
         break;
     }
 
