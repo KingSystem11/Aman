@@ -75,11 +75,6 @@ function setupMusicEvents(client) {
                     .setCustomId('music_loop')
                     .setEmoji(emojis.loop)
                     .setStyle(ButtonStyle.Secondary)
-                    .setDisabled(disabled),
-                new ButtonBuilder()
-                    .setCustomId('music_autoplay')
-                    .setEmoji(emojis.autoplay)
-                    .setStyle(player.autoplayEnabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
                     .setDisabled(disabled)
             );
         }
@@ -442,7 +437,6 @@ function setupMusicEvents(client) {
                             });
                             break;
                         }
-                        case 'music_autoplay':
                         case 'music_autoplay_2': {
                             player.autoplayEnabled = !player.autoplayEnabled;
                             const embed = new EmbedBuilder()
