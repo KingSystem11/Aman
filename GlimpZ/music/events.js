@@ -109,6 +109,31 @@ function setupMusicEvents(client) {
             );
         }
 
+        function getThirdControlButtonRow(disabled = false) {
+            return new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId('music_backward')
+                    .setEmoji(emojis.backward)
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled),
+                new ButtonBuilder()
+                    .setCustomId('music_forward')
+                    .setEmoji(emojis.forward)
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled),
+                new ButtonBuilder()
+                    .setCustomId('music_volume_down')
+                    .setEmoji(emojis.volumeDown)
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled),
+                new ButtonBuilder()
+                    .setCustomId('music_volume_up')
+                    .setEmoji(emojis.volumeUp)
+                    .setStyle(ButtonStyle.Secondary)
+                    .setDisabled(disabled)
+            );
+        }
+
         function getFilterSelectRow(disabled = false) {
             const filterOptions = [
                 { label: 'Nightcore', description: 'Speed up with higher pitch', value: 'nightcore' },
@@ -136,6 +161,7 @@ function setupMusicEvents(client) {
 
         let firstControlButtonRow = getFirstControlButtonRow(false, false);
         let secondControlButtonRow = getSecondControlButtonRow(false);
+        let thirdControlButtonRow = getThirdControlButtonRow(false);
         let filterSelectRow = getFilterSelectRow(false);
 
         const embed = new EmbedBuilder()
@@ -190,7 +216,7 @@ function setupMusicEvents(client) {
         try {
             const messageOptions = {
                 embeds: [embed],
-                components: [filterSelectRow, firstControlButtonRow, secondControlButtonRow],
+                components: [filterSelectRow, firstControlButtonRow, secondControlButtonRow, thirdControlButtonRow],
             };
 
             
@@ -637,6 +663,68 @@ function setupMusicEvents(client) {
                             }
                             break;
                         }
+                        case 'music_forward': {
+                            if (!player.currentTrack) {
+                                const embed = new EmbedBuilder()
+                                    .setColor(0xFF0000)
+                                    .setDescription(`${emojis.error} No track is currently playing!`);
+                                return interaction.reply({ embeds: [embed], ephemeral: true });
+                            }
+                            const currentPosition = player.position || 0;
+                            const newPosition = currentPosition + 10000;
+                            const trackDuration = player.currentTrack.info.length;
+                            
+                            if (newPosition >= trackDuration) {
+                                player.skip();
+                                const embed = new EmbedBuilder()
+                                    .setColor(0x00FF00)
+                                    .setDescription(`${emojis.forward} Skipped to next track.`);
+                                return interaction.reply({ embeds: [embed], ephemeral: true });
+                            }
+                            
+                            player.seekTo(newPosition);
+                            const embed = new EmbedBuilder()
+                                .setColor(0x00FF00)
+                                .setDescription(`${emojis.forward} Forwarded 10 seconds.`);
+                            await interaction.reply({ embeds: [embed], ephemeral: true });
+                            break;
+                        }
+                        case 'music_backward': {
+                            if (!player.currentTrack) {
+                                const embed = new EmbedBuilder()
+                                    .setColor(0xFF0000)
+                                    .setDescription(`${emojis.error} No track is currently playing!`);
+                                return interaction.reply({ embeds: [embed], ephemeral: true });
+                            }
+                            const currentPos = player.position || 0;
+                            const newPos = Math.max(0, currentPos - 10000);
+                            player.seekTo(newPos);
+                            const embed = new EmbedBuilder()
+                                .setColor(0x00FF00)
+                                .setDescription(`${emojis.backward} Rewound 10 seconds.`);
+                            await interaction.reply({ embeds: [embed], ephemeral: true });
+                            break;
+                        }
+                        case 'music_volume_up': {
+                            const currentVol = player.volume || 100;
+                            const newVol = Math.min(1000, currentVol + 10);
+                            player.setVolume(newVol);
+                            const embed = new EmbedBuilder()
+                                .setColor(0x00FF00)
+                                .setDescription(`${emojis.volumeUp} Volume: **${newVol}%**`);
+                            await interaction.reply({ embeds: [embed], ephemeral: true });
+                            break;
+                        }
+                        case 'music_volume_down': {
+                            const currVol = player.volume || 100;
+                            const newVolume = Math.max(0, currVol - 10);
+                            player.setVolume(newVolume);
+                            const embed = new EmbedBuilder()
+                                .setColor(0x00FF00)
+                                .setDescription(`${emojis.volumeDown} Volume: **${newVolume}%**`);
+                            await interaction.reply({ embeds: [embed], ephemeral: true });
+                            break;
+                        }
                     }
                 } catch (error) {
                     console.error('Button interaction error:', error);
@@ -704,9 +792,10 @@ function setupMusicEvents(client) {
 
                     try {
                         const updatedFilterSelectRow = getFilterSelectRow(false);
+                        const updatedThirdControlButtonRow = getThirdControlButtonRow(false);
                         const editOptions = {
                             embeds: [updatedEmbed],
-                            components: [updatedFilterSelectRow, updatedFirstControlButtonRow, updatedSecondControlButtonRow],
+                            components: [updatedFilterSelectRow, updatedFirstControlButtonRow, updatedSecondControlButtonRow, updatedThirdControlButtonRow],
                         };
 
                         

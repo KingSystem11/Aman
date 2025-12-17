@@ -37,15 +37,15 @@ module.exports = {
             if (!args[0]) {
                 const embed = new EmbedBuilder()
                     .setColor(0xFF0000)
-                    .setDescription(`${emojis.error} Please provide a volume level (1-100)!`);
+                    .setDescription(`${emojis.error} Please provide a volume level (1-1000)!`);
                 return message.reply({ embeds: [embed] });
             }
 
             const level = parseInt(args[0]);
-            if (isNaN(level) || level < 1 || level > 100) {
+            if (isNaN(level) || level < 1 || level > 1000) {
                 const embed = new EmbedBuilder()
                     .setColor(0xFF0000)
-                    .setDescription(`${emojis.error} Volume must be between 1 and 100!`);
+                    .setDescription(`${emojis.error} Volume must be between 1 and 1000!`);
                 return message.reply({ embeds: [embed] });
             }
 
