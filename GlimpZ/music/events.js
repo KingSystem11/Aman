@@ -869,7 +869,7 @@ function setupMusicEvents(client) {
             if (channel) {
                 const idleEmbed = new EmbedBuilder()
                     .setColor(0x5865F2)
-                    .setDescription(`${emojis.music} Queue finished! Use \`.play\` to add more songs or \`.stop\` to disconnect.`);
+                    .setDescription(`${emojis.music} Queue finished! Use \`!play\` to add more songs or \`!stop\` to disconnect.`);
                 await channel.send({ embeds: [idleEmbed] }).catch(() => {});
             }
             

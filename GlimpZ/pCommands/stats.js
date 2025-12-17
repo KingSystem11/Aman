@@ -108,7 +108,7 @@ module.exports = {
 
       if (interaction.customId === "back_about") {
         await interaction.reply({
-          content: "Use `.about` to return to the overview panel.",
+          content: "Use `!about` to return to the overview panel.",
           ephemeral: true
         });
       }
