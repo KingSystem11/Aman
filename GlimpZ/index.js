@@ -15,36 +15,42 @@ let prefixes = {};
 try {
   if (fs.existsSync(PREFIXES_FILE)) {
     prefixes = JSON.parse(fs.readFileSync(PREFIXES_FILE, 'utf8') || '{}');
+    console.log(`\x1b[92m✓\x1b[0m \x1b[97mPrefix System\x1b[0m: Loaded ${Object.keys(prefixes).length} guild prefixes from prefixes.json`);
   } else {
     prefixes = {};
     fs.writeFileSync(PREFIXES_FILE, JSON.stringify(prefixes, null, 4));
+    console.log(`\x1b[93m⚠\x1b[0m \x1b[97mPrefix System\x1b[0m: Created new prefixes.json file`);
   }
 } catch (err) {
-  console.error('Failed to load prefixes.json:', err);
+  console.error('\x1b[91m✗\x1b[0m \x1b[97mPrefix System\x1b[0m: Failed to load prefixes.json:', err);
   prefixes = {};
 }
 
 function savePrefixes() {
   try {
     fs.writeFileSync(PREFIXES_FILE, JSON.stringify(prefixes, null, 4));
+    console.log(`\x1b[94m↻\x1b[0m \x1b[97mPrefix System\x1b[0m: Saved ${Object.keys(prefixes).length} guild prefixes`);
   } catch (err) {
-    console.error('Failed to save prefixes.json:', err);
+    console.error('\x1b[91m✗\x1b[0m \x1b[97mPrefix System\x1b[0m: Failed to save prefixes.json:', err);
   }
 }
 
 function getGuildPrefix(guildId) {
-  if (!guildId) return config.PREFIX; // fallback
+  if (!guildId) return config.PREFIX;
   if (!prefixes[guildId]) {
     prefixes[guildId] = config.PREFIX;
     savePrefixes();
+    console.log(`\x1b[94m+\x1b[0m \x1b[97mPrefix System\x1b[0m: Initialized default prefix "${config.PREFIX}" for guild ${guildId}`);
   }
   return prefixes[guildId];
 }
 
 function setGuildPrefix(guildId, newPrefix) {
   if (!guildId) return false;
+  const oldPrefix = prefixes[guildId] || config.PREFIX;
   prefixes[guildId] = newPrefix;
   savePrefixes();
+  console.log(`\x1b[92m✓\x1b[0m \x1b[97mPrefix System\x1b[0m: Changed prefix for guild ${guildId}: "${oldPrefix}" → "${newPrefix}"`);
   return true;
 }
 
