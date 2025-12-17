@@ -77,15 +77,15 @@ const colors = {
 
 
 function printHeader() {
-    console.log(`\n${colors.PURPLE}    ██████╗ ██╗     ██╗███╗   ███╗██████╗ ███████╗${colors.RESET}`);
-    console.log(`${colors.PURPLE}   ██╔════╝ ██║     ██║████╗ ████║██╔══██╗╚══███╔╝${colors.RESET}`);
-    console.log(`${colors.CYAN}   ██║  ███╗██║     ██║██╔████╔██║██████╔╝  ███╔╝ ${colors.RESET}`);
-    console.log(`${colors.CYAN}   ██║   ██║██║     ██║██║╚██╔╝██║██╔═══╝  ███╔╝  ${colors.RESET}`);
-    console.log(`${colors.BLUE}   ╚██████╔╝███████╗██║██║ ╚═╝ ██║██║     ███████╗${colors.RESET}`);
-    console.log(`${colors.BLUE}    ╚═════╝ ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝${colors.RESET}`);
-    console.log(`${colors.PINK}          ♪ ${colors.WHITE}${colors.BOLD}M U S I C   B O T${colors.RESET} ${colors.PINK}♪${colors.RESET}`);
-    console.log(`${colors.DIM}${colors.GRAY}     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.RESET}`);
-    console.log(`${colors.DIM}${colors.WHITE}       High-Quality ${colors.PINK}•${colors.WHITE} Fast ${colors.PINK}•${colors.WHITE} Reliable${colors.RESET}\n`);
+    console.log(`\n${colors.PURPLE}   ███╗   ██╗███████╗██╗  ██╗ ██████╗ ${colors.RESET}`);
+    console.log(`${colors.PURPLE}   ████╗  ██║██╔════╝╚██╗██╔╝██╔═══██╗${colors.RESET}`);
+    console.log(`${colors.CYAN}   ██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║${colors.RESET}`);
+    console.log(`${colors.CYAN}   ██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║${colors.RESET}`);
+    console.log(`${colors.BLUE}   ██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝${colors.RESET}`);
+    console.log(`${colors.BLUE}   ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ${colors.RESET}`);
+    console.log(`${colors.PINK}       ♪ ${colors.WHITE}${colors.BOLD}M U S I C   B O T${colors.RESET} ${colors.PINK}♪${colors.RESET}`);
+    console.log(`${colors.DIM}${colors.GRAY}   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.RESET}`);
+    console.log(`${colors.DIM}${colors.WHITE}    High-Quality ${colors.PINK}•${colors.WHITE} Fast ${colors.PINK}•${colors.WHITE} Reliable${colors.RESET}\n`);
 }
 
 function printLoading(message) {
