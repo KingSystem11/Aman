@@ -77,10 +77,15 @@ const colors = {
 
 
 function printHeader() {
-    console.log(`\n${colors.CYAN}╭─────────────────────────────────────────────────────────────╮${colors.RESET}`);
-    console.log(`${colors.CYAN}│${colors.RESET}                     ${colors.BOLD}${colors.PURPLE}♪ GlimpZ MUSIC ♪${colors.RESET}                     ${colors.CYAN}│${colors.RESET}`);
-    console.log(`${colors.CYAN}│${colors.RESET}              ${colors.DIM}${colors.WHITE}High-Quality • Fast • Reliable${colors.RESET}               ${colors.CYAN}│${colors.RESET}`);
-    console.log(`${colors.CYAN}╰─────────────────────────────────────────────────────────────╯${colors.RESET}\n`);
+    console.log(`\n${colors.PURPLE}    ██████╗ ██╗     ██╗███╗   ███╗██████╗ ███████╗${colors.RESET}`);
+    console.log(`${colors.PURPLE}   ██╔════╝ ██║     ██║████╗ ████║██╔══██╗╚══███╔╝${colors.RESET}`);
+    console.log(`${colors.CYAN}   ██║  ███╗██║     ██║██╔████╔██║██████╔╝  ███╔╝ ${colors.RESET}`);
+    console.log(`${colors.CYAN}   ██║   ██║██║     ██║██║╚██╔╝██║██╔═══╝  ███╔╝  ${colors.RESET}`);
+    console.log(`${colors.BLUE}   ╚██████╔╝███████╗██║██║ ╚═╝ ██║██║     ███████╗${colors.RESET}`);
+    console.log(`${colors.BLUE}    ╚═════╝ ╚══════╝╚═╝╚═╝     ╚═╝╚═╝     ╚══════╝${colors.RESET}`);
+    console.log(`${colors.PINK}          ♪ ${colors.WHITE}${colors.BOLD}M U S I C   B O T${colors.RESET} ${colors.PINK}♪${colors.RESET}`);
+    console.log(`${colors.DIM}${colors.GRAY}     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.RESET}`);
+    console.log(`${colors.DIM}${colors.WHITE}       High-Quality ${colors.PINK}•${colors.WHITE} Fast ${colors.PINK}•${colors.WHITE} Reliable${colors.RESET}\n`);
 }
 
 function printLoading(message) {
@@ -100,15 +105,14 @@ function printInfo(message) {
 }
 
 function printSeparator() {
-    const separator = `${colors.CYAN}─${colors.PURPLE}─${colors.BLUE}─${colors.RESET}`;
-    console.log(`   ${separator.repeat(20)}`);
+    console.log(`${colors.DIM}${colors.GRAY}   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.RESET}`);
 }
 
 function printSystemReady() {
     printSeparator();
-    console.log(`\n   ${colors.BOLD}${colors.PURPLE}♪ System Operational ♪${colors.RESET}`);
-    console.log(`   ${colors.DIM}${colors.WHITE}Developed with ${colors.PINK}♡${colors.WHITE} by KingSystem11${colors.RESET}`);
-    console.log(`   ${colors.DIM}${colors.GRAY}Ready to bring music to your servers${colors.RESET}\n`);
+    console.log(`\n   ${colors.GREEN}█${colors.RESET} ${colors.BOLD}${colors.WHITE}System Status:${colors.RESET} ${colors.GREEN}ONLINE${colors.RESET}`);
+    console.log(`   ${colors.PURPLE}█${colors.RESET} ${colors.BOLD}${colors.WHITE}Developer:${colors.RESET} ${colors.PINK}KingSystem11${colors.RESET}`);
+    console.log(`   ${colors.CYAN}█${colors.RESET} ${colors.BOLD}${colors.WHITE}Status:${colors.RESET} ${colors.DIM}Ready to bring music to your servers${colors.RESET}\n`);
     printSeparator();
     console.log();
 }
