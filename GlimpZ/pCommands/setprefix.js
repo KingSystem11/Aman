@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require("discord.js");
-const { getPrefix, setPrefix } = require("../utils/prefixManager");
+const { getGuildPrefix, setGuildPrefix } = require("../index");
 
 module.exports = {
   name: "setprefix",
@@ -19,8 +19,8 @@ module.exports = {
     if (newPrefix.length > 3)
       return message.reply("❌ Prefix should not be longer than 3 characters.");
 
-    const oldPrefix = getPrefix(message.guild.id);
-    setPrefix(message.guild.id, newPrefix);
+    const oldPrefix = getGuildPrefix(message.guild.id);
+    setGuildPrefix(message.guild.id, newPrefix);
 
     const embed = new EmbedBuilder()
       .setColor(0x5865F2)
