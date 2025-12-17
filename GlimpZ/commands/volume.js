@@ -8,10 +8,10 @@ module.exports = {
         .setDescription('Set music volume')
         .addIntegerOption(option =>
             option.setName('level')
-                .setDescription('Volume level (1-200)')
+                .setDescription('Volume level (1-1000)')
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(200)
+                .setMaxValue(1000)
         ),
 
     async execute(interaction) {

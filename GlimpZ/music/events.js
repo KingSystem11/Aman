@@ -92,6 +92,11 @@ function setupMusicEvents(client) {
                     .setStyle(ButtonStyle.Secondary)
                     .setDisabled(disabled),
                 new ButtonBuilder()
+                    .setCustomId('music_autoplay_2')
+                    .setEmoji(emojis.autoplay)
+                    .setStyle(player.autoplayEnabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
+                    .setDisabled(disabled),
+                new ButtonBuilder()
                     .setCustomId('music_shuffle')
                     .setEmoji(emojis.shuffle)
                     .setStyle(ButtonStyle.Secondary)
@@ -437,7 +442,8 @@ function setupMusicEvents(client) {
                             });
                             break;
                         }
-                        case 'music_autoplay': {
+                        case 'music_autoplay':
+                        case 'music_autoplay_2': {
                             player.autoplayEnabled = !player.autoplayEnabled;
                             const embed = new EmbedBuilder()
                                 .setColor(0x5865F2)
@@ -702,7 +708,7 @@ function setupMusicEvents(client) {
                         }
                         case 'music_volume_up': {
                             const currentVol = player.volume || 100;
-                            const newVol = Math.min(200, currentVol + 10);
+                            const newVol = Math.min(1000, currentVol + 10);
                             player.setVolume(newVol);
                             const embed = new EmbedBuilder()
                                 .setColor(0x00FF00)
